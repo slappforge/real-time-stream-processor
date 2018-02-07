@@ -4,7 +4,7 @@ This sample demonstrates the use of AWS Lambda with AWS Kinesis and AWS DynamoDB
 
 ## Prerequisites
 
-All the deployments of this application are based on Amazon AWS. To open the project, you will need the Sigma IDE which can be found at https://slappforge.adroitlogic.com. You will need to create an account and provide your AWS credentials to open the project (Your AWS credentials will not be acquired by SLAppForge under any circumstances).
+All the deployments of this application are based on Amazon AWS. To open the project, you will need the Sigma IDE which can be found at [Sigma IDE](https://sigma.slappforge.com). You will need to create an account and provide your AWS credentials to open the project (Your AWS credentials will not be acquired by SLAppForge under any circumstances).
 
 ## Usecase Description
 
