@@ -1,5 +1,5 @@
 {
-  "name": "real-time-stream-processor-mock",
+  "name": "real-time-stream-processor",
   "version": "1.0.0",
   "dependencies": {
     "aws-sdk": "2.176.0",
