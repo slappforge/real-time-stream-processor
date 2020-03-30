@@ -1,7 +1,8 @@
 {
   "name": "real-time-stream-processor",
   "version": "1.0.0",
-  "dependencies": {
-    
+  "dependencies": {},
+  "devDependencies": {
+    "aws-sdk": "2.644.0"
   }
 }
