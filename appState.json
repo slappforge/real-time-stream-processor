@@ -134,17 +134,7 @@
     },
     "packageJSON": {
       "dependencies": {
-        "aws-sdk": {
-          "name": "aws-sdk",
-          "version": "2.176.0",
-          "notRemovable": true
-        },
-        "slappforge-sdk": {
-          "name": "@slappforge/slappforge-sdk",
-          "version": "0.0.3",
-          "notRemovable": true,
-          "types": "\n                    declare class RDSQueryParams {\n    instanceIdentifier: string;\n    query: string;\n    inserts: Array<any>\n}\n\ndeclare namespace SL.AWS {\n    class RDS {\n        query(params: RDSQueryParams, callback: Function, connection: any): void;\n\n        beginTransaction(params: any, callback: Function): void;\n    }\n\n    class SQS {\n        receiveAndDeleteMessages(params: any, filteringCallBack: Function, deleteCallBack: Function, errorCallBack: Function): void;\n    }\n}\n"
-        }
+        
       }
     },
     "lambdaId": "16e8ed21-8b13-496c-8a07-ff6b94c7e9e7",
