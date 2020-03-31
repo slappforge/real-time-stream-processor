@@ -40,8 +40,8 @@
           "layers": []
         },
         "cursor": {
-          "lineNumber": 46,
-          "column": 5
+          "lineNumber": 28,
+          "column": 38
         }
       },
       "bad406e2-4d28-4698-b061-3ab30fb2fa0b": {
@@ -113,7 +113,6 @@
         "type": "DynamoDB",
         "config": {
           "mode": 0,
-          "operation": "put",
           "table": {
             "arn": "",
             "name": "click-stream-table",
@@ -123,29 +122,8 @@
             "sortKey": "Timestamp",
             "sortKeyType": "S",
             "mode": 0
-          },
-          "isGlobalEditMode": false,
-          "parameters": {
-            "Key": {},
-            "Item": {
-              "IP": "@{activity.ip}",
-              "Timestamp": "@{activity.timestamp}",
-              "Browser": "@{activity.browser}",
-              "URL": "@{activity.url}",
-              "Referrer": "@{activity.referrer}",
-              "OS": "@{activity.os}",
-              "Country": "@{activity.country}",
-              "Language": "@{activity.language}"
-            },
-            "ExpressionAttributeValues": {}
-          },
-          "validator": {
-            "validatableFields": {},
-            "validity": true
-          },
-          "valid": true
-        },
-        "globallyEditable": false
+          }
+        }
       }
     },
     "customTemplate": {
@@ -185,7 +163,7 @@
     "platform": "AWS",
     "language": "nodejs",
     "platformRegions": {},
-    "lastSave": 1585571432378
+    "lastSave": 1585653443200
   },
   "VCS_STATE": {
     "provider": "GitHub",

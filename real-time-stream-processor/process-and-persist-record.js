@@ -25,16 +25,16 @@ exports.handler = async (event) => {
 
 			try {
 				let data = ddb.put({
-					TableName: 'click-stream-table',
+					TableName: "click-stream-table",
 					Item: {
-						'IP': activity.ip,
-						'Timestamp': activity.timestamp,
-						'Browser': activity.browser,
-						'URL': activity.url,
-						'Referrer': activity.referrer,
-						'OS': activity.os,
-						'Country': activity.country,
-						'Language': activity.language
+						IP: activity.ip,
+						Timestamp: activity.timestamp,
+						Browser: activity.browser,
+						URL: activity.url,
+						Referrer: activity.referrer,
+						OS: activity.os,
+						Country: activity.country,
+						Language: activity.language
 					}
 				}).promise();
 				console.debug('Response -> data:', data);
