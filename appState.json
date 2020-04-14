@@ -18,12 +18,11 @@
         "id": "16e8ed21-8b13-496c-8a07-ff6b94c7e9e7",
         "parent": "33934c41-a5f8-4f8f-9d03-8d207726a4e8",
         "name": "process-and-persist-record.js",
-        "type": "LAMBDA_FILE",
+        "type": "JS_LAMBDA",
         "isDirectory": false,
         "children": [],
         "isRemovable": true,
         "filePath": "real-time-stream-processor/process-and-persist-record.js",
-        "code": "console.log('Loading function: Process and Persist Record...');\n\nconst AWS = require('aws-sdk');\nconst ddb = new AWS.DynamoDB.DocumentClient();\n\nexports.handler = function (event, context, callback) {\n\tconsole.log('Received event:', JSON.stringify(event, null, 2));\n\n\t/**\n\t * Iterates through the Kinesis records which this function is triggered by and parses the activity payload.\n\t * Validates the activity and inserts into a DynamoDB table.\n\t */\n\tevent.Records.forEach(record => {\n\t\t\n\t\tlet payload = JSON.parse(new Buffer(record.kinesis.data, 'base64').toString('ascii'));\n\t\tconsole.log('Decoded payload:', payload);\n\t\t\n\t\tlet activity = JSON.parse(payload);\n\n\t\tconsole.log('IP:', activity.ip);\n\t\tconsole.log('Timestamp:', activity.timestamp);\n\n\t\t// Partition key and sort key should be non null values\n\t\tif (activity.ip !== undefined && activity.timestamp !== undefined) {\n\n\t\t\tddb.put({\n\t\t\t\tTableName: 'click-stream-table',\n\t\t\t\tItem: { \n\t\t\t\t\t'IP': activity.ip, \n\t\t\t\t\t'Timestamp': activity.timestamp, \n\t\t\t\t\t'Browser': activity.browser, \n\t\t\t\t\t'URL': activity.url, \n\t\t\t\t\t'Referrer': activity.referrer, \n\t\t\t\t\t'OS': activity.os, \n\t\t\t\t\t'Country': activity.country, \n\t\t\t\t\t'Language': activity.language \n\t\t\t\t}\n\t\t\t}, function (err, data) {\n\t\t\t\tif (err) {\n\t\t\t\t\tconsole.log('Response -> error:', err);\n\t\t\t\t\tcontext.fail(err);\n\t\t\t\t} else {\n\t\t\t\t\tconsole.debug('Response -> data:', data);\n\t\t\t\t\tcontext.succeed();\n\t\t\t\t}\n\t\t\t});\n\n\t\t} else {\n\t\t\tconsole.log('Invalid input:', 'Missing required keys ip and/or timestamp');\n\t\t\tcontext.fail(new Error('Missing required keys ip and/or timestamp'));\n\t\t}\n\n\t});\n\n}",
         "triggers": [
           {
             "resourceName": "kinesisclickStream",
@@ -33,33 +32,51 @@
             }
           }
         ],
-        "version": 3
+        "config": {
+          "runtime": "nodejs10.x",
+          "handler": "handler",
+          "timeout": 60,
+          "memory": 128,
+          "layers": []
+        },
+        "cursor": {
+          "lineNumber": 28,
+          "column": 38
+        }
       },
       "bad406e2-4d28-4698-b061-3ab30fb2fa0b": {
         "id": "bad406e2-4d28-4698-b061-3ab30fb2fa0b",
         "parent": "33934c41-a5f8-4f8f-9d03-8d207726a4e8",
         "name": "publish-activity-stream.js",
-        "type": "LAMBDA_FILE",
+        "type": "JS_LAMBDA",
         "isDirectory": false,
         "children": [],
         "isRemovable": true,
         "filePath": "real-time-stream-processor/publish-activity-stream.js",
-        "code": "console.log('Loading function: Publish Activity Stream...');\n\nconst AWS = require('aws-sdk');\nconst kinesis = new AWS.Kinesis();\n\nexports.handler = function (event, context, callback) {\n\tconsole.log('Received event:', JSON.stringify(event, null, 2));\n\n    // activity reported through API proxy\n    let activity = JSON.stringify(event.body);\n    console.log('Activity:', activity);\n\n    kinesis.putRecord({\n        Data: activity,\n        PartitionKey: '0',\n        StreamName: 'click-stream'\n    }).promise()\n        .then(data => {\n            console.log('Response -> data:', data);\n            let response = {\n                'statusCode': 200,\n                'headers': {\n                    'Access-Control-Allow-Origin': '*',\n                    'Content-Type': 'application/json'\n                },\n                'body': JSON.stringify({\n                    'Code': 'PutRecordSuccessful',\n                    'Message': 'Record was successfully put to click-stream',\n                    'Data': data\n                }),\n                'isBase64Encoded': false\n            };\n            callback(null, response);\n        })\n        .catch(err => {\n            console.log('Response -> error:', err);\n            let response = {\n                'statusCode': err.statusCode,\n                'headers': {\n                    'Access-Control-Allow-Origin': '*',\n                    'Content-Type': 'application/json'\n                },\n                'body': JSON.stringify({\n                    'Code': err.code,\n                    'Message': err.message\n                }),\n                'isBase64Encoded': false\n            };\n            callback(null, response);\n        });\n\n}",
         "triggers": [
           {
             "resourceName": "apigusEast1activityStreamProxyreportpost",
             "config": {}
           }
         ],
-        "version": 1
+        "config": {
+          "runtime": "nodejs10.x",
+          "handler": "handler",
+          "timeout": 60,
+          "memory": 128,
+          "layers": []
+        },
+        "cursor": {
+          "lineNumber": 6,
+          "column": 37
+        }
       }
     },
-    "rootNode": "33934c41-a5f8-4f8f-9d03-8d207726a4e8",
     "openFiles": [
       "bad406e2-4d28-4698-b061-3ab30fb2fa0b",
       "16e8ed21-8b13-496c-8a07-ff6b94c7e9e7"
     ],
-    "currentFileId": "bad406e2-4d28-4698-b061-3ab30fb2fa0b",
+    "currentFileId": "16e8ed21-8b13-496c-8a07-ff6b94c7e9e7",
     "resources": {
       "kinesisclickStream": {
         "name": "kinesisclickStream",
@@ -69,9 +86,8 @@
           "StreamName": "click-stream",
           "shards": 1,
           "region": "us-east-1",
-          "operation": "put-record"
-        },
-        "globallyEditable": true
+          "operation": "describeStream"
+        }
       },
       "apigusEast1activityStreamProxyreportpost": {
         "name": "apigusEast1activityStreamProxyreportpost",
@@ -97,7 +113,6 @@
         "type": "DynamoDB",
         "config": {
           "mode": 0,
-          "operation": "put",
           "table": {
             "arn": "",
             "name": "click-stream-table",
@@ -107,64 +122,54 @@
             "sortKey": "Timestamp",
             "sortKeyType": "S",
             "mode": 0
-          },
-          "isGlobalEditMode": false,
-          "parameters": {
-            "Key": {},
-            "Item": {
-              "IP": "@{activity.ip}",
-              "Timestamp": "@{activity.timestamp}",
-              "Browser": "@{activity.browser}",
-              "URL": "@{activity.url}",
-              "Referrer": "@{activity.referrer}",
-              "OS": "@{activity.os}",
-              "Country": "@{activity.country}",
-              "Language": "@{activity.language}"
-            },
-            "ExpressionAttributeValues": {}
-          },
-          "validator": {
-            "validatableFields": {},
-            "validity": true
-          },
-          "valid": true
-        },
-        "globallyEditable": false
-      }
-    },
-    "packageJSON": {
-      "dependencies": {
-        "aws-sdk": {
-          "name": "aws-sdk",
-          "version": "2.176.0",
-          "notRemovable": true
-        },
-        "slappforge-sdk": {
-          "name": "@slappforge/slappforge-sdk",
-          "version": "0.0.3",
-          "notRemovable": true,
-          "types": "\n                    declare class RDSQueryParams {\n    instanceIdentifier: string;\n    query: string;\n    inserts: Array<any>\n}\n\ndeclare namespace SL.AWS {\n    class RDS {\n        query(params: RDSQueryParams, callback: Function, connection: any): void;\n\n        beginTransaction(params: any, callback: Function): void;\n    }\n\n    class SQS {\n        receiveAndDeleteMessages(params: any, filteringCallBack: Function, deleteCallBack: Function, errorCallBack: Function): void;\n    }\n}\n"
+          }
         }
       }
     },
-    "lambdaId": "16e8ed21-8b13-496c-8a07-ff6b94c7e9e7",
-    "additionalFiles": [],
+    "customTemplate": {
+      "dialect": null,
+      "definitions": null
+    },
     "envVariables": [
       {
         "lambdaId": "all",
         "varKey": "SIGMA_AWS_ACC_ID",
-        "varValue": "",
-        "editable": false
+        "varValue": null,
+        "editable": false,
+        "shouldPersist": false,
+        "displayOnly": false
       }
-    ]
+    ],
+    "packageJSON": {
+      "dependencies": {
+        "aws-sdk": {
+          "name": "aws-sdk",
+          "language": "nodejs",
+          "version": "2.644.0",
+          "dev": true,
+          "notRemovable": false
+        }
+      }
+    },
+    "rootNode": "33934c41-a5f8-4f8f-9d03-8d207726a4e8",
+    "lambdaId": "16e8ed21-8b13-496c-8a07-ff6b94c7e9e7",
+    "additionalFiles": []
   },
   "PROJECT_META": {
     "projectName": "real-time-stream-processor",
     "projectDescription": "A sample use case of the usage of AWS Kinesis with AWS Lambda (Real-time Stream Processing: Application Activity Tracking)",
     "projectVersion": "1.0.0",
     "projectRegion": "us-east-1",
-    "repoName": "real-time-stream-processor",
-    "repoUrl": "https://github.com/slappforge/real-time-stream-processor",
-    "lastSave": 1522210975132
+    "platform": "AWS",
+    "language": "nodejs",
+    "platformRegions": {},
+    "lastSave": 1585653443200
+  },
+  "VCS_STATE": {
+    "provider": "GitHub",
+    "repo": {
+      "name": "real-time-stream-processor",
+      "url": "https://github.com/slappforge/real-time-stream-processor"
+    }
   }
 }
