@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "dependencies": {},
   "devDependencies": {
-    "aws-sdk": "2.644.0"
+    "aws-sdk": "2.1693.0"
   }
 }
